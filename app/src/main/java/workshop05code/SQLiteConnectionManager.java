@@ -27,7 +27,7 @@ public class SQLiteConnectionManager {
             e1.printStackTrace();
         }
     }
-
+    
     private static final Logger logger = Logger.getLogger(SQLiteConnectionManager.class.getName());
     //End code logging exercise
     
@@ -64,12 +64,12 @@ public class SQLiteConnectionManager {
         try (Connection conn = DriverManager.getConnection(databaseURL)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
-                System.out.println("The driver name is " + meta.getDriverName());
-                System.out.println("A new database has been created.");
+                logger.log(Level.INFO, "The driver name is " + meta.getDriverName());
+                logger.log(Level.INFO,"A new database has been created.");
 
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, "Database Error", e);
         }
     }
 
@@ -88,7 +88,7 @@ public class SQLiteConnectionManager {
                     return true;
                 }
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                logger.log(Level.SEVERE, "Connection Error", e);
                 return false;
             }
         }
@@ -113,7 +113,7 @@ public class SQLiteConnectionManager {
                 return true;
 
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                logger.log(Level.SEVERE, "Invalid Table Error", e);
                 return false;
             }
         }
@@ -127,13 +127,15 @@ public class SQLiteConnectionManager {
      */
     public void addValidWord(int id, String word) {
 
-        String sql = "INSERT INTO validWords(id,word) VALUES('" + id + "','" + word + "')";
+        String sql = "INSERT INTO validWords(id,word) VALUES(?,?)";
 
         try (Connection conn = DriverManager.getConnection(databaseURL);
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.executeUpdate();
+                    pstmt.setInt(1, id);
+                    pstmt.setString(2, word);
+                    pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
         }
 
     }
@@ -159,7 +161,7 @@ public class SQLiteConnectionManager {
             return false;
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, "Invalid Input Error", e);
             return false;
         }
 

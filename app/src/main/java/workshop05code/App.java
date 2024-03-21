@@ -29,13 +29,12 @@ public class App {
 
     private static final Logger logger = Logger.getLogger(App.class.getName());
     // End code for logging exercise
-    
+        
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         SQLiteConnectionManager wordleDatabaseConnection = new SQLiteConnectionManager("words.db");
-
         wordleDatabaseConnection.createNewDatabase("words.db");
         if (wordleDatabaseConnection.checkIfConnectionDefined()) {
             System.out.println("Wordle created and connected.");
@@ -56,20 +55,23 @@ public class App {
             String line;
             int i = 1;
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
+                // System.out.println(line); - Don't print answers
                 wordleDatabaseConnection.addValidWord(i, line);
+                logger.log(Level.INFO,"Valid Word Logged");
                 i++;
             }
 
         } catch (IOException e) {
             System.out.println("Not able to load . Sorry!");
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, "Error with exception.", e);
+            //  System.out.println(e.getMessage()); - Do not print traces to screen
             return;
         }
 
         // let's get them to enter a word
 
         try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Game Ready! \n");
             System.out.print("Enter a 4 letter word for a guess or q to quit: ");
             String guess = scanner.nextLine();
 
@@ -80,6 +82,8 @@ public class App {
                     System.out.println("Success! It is in the the list.\n");
                 }else{
                     System.out.println("Sorry. This word is NOT in the the list.\n");
+                    logger.log(Level.INFO, guess); // Log incorrect guesses
+                
                 }
 
                 System.out.print("Enter a 4 letter word for a guess or q to quit: " );
@@ -88,6 +92,8 @@ public class App {
         } catch (NoSuchElementException | IllegalStateException e) {
             e.printStackTrace();
         }
-
+        
+ 
+    
     }
 }
